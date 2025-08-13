@@ -8,10 +8,11 @@
  *
  * @author Harsh baweja
  */
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.Statement;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 public class Customer extends javax.swing.JFrame {
 
@@ -263,95 +264,43 @@ public class Customer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (c1.getSelectedIndex()==1)
-        {
-            ta1.setText("");
-            try
-            {
-                Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="select cage_number from animals where ASID=100011;";
-                ResultSet rs=stmt.executeQuery(query);
-                while (rs.next())
-                {
-
-                    String cage=rs.getString(1);
-                    ta1.append(cage+"\n");
-                    
-                }
-                
-                rs.close();
-                stmt.close();
-                con.close();
-
-            }
-            catch (Exception e)
-            {
-                System.out.print(e.getMessage());
-            }
-        }
-        else if (c1.getSelectedIndex()==2)
-        {
-            ta1.setText("");
-            try
-            {
-                Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="select cage_number from animals where ASID=100012;";
-                ResultSet rs=stmt.executeQuery(query);
-                while (rs.next())
-                {
-
-                    String cage=rs.getString(1);
-                    ta1.append(cage+"\n");
-                    
-                }
-                
-                rs.close();
-                stmt.close();
-                con.close();
-
-            }
-            catch (Exception e)
-            {
-                System.out.print(e.getMessage());
-            }
-        }
-        else if (c1.getSelectedIndex()==3)
-        {
-            ta1.setText("");
-            try
-            {
-                Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="select cage_number from animals where ASID=100013;";
-                ResultSet rs=stmt.executeQuery(query);
-                while (rs.next())
-                {
-
-                    String cage=rs.getString(1);
-                    
-                    ta1.append(cage+"\n");
-                    
-                }
-                
-                rs.close();
-                stmt.close();
-                con.close();
-
-            }
-            catch (Exception e)
-            {
-                System.out.print(e.getMessage());
-            }
-        }
-        else if (c1.getSelectedIndex()==0)
-        {
+        int selectedIndex = c1.getSelectedIndex();
+        if (selectedIndex == 0) {
             ta1.setText("");
             JOptionPane.showMessageDialog(this, "Choose the animal");
+            return;
+        }
+
+        ta1.setText("");
+        String query = "select cage_number from animals where ASID = ?;";
+        int asid = 0;
+        switch (selectedIndex) {
+            case 1:
+                asid = 100011;
+                break;
+            case 2:
+                asid = 100012;
+                break;
+            case 3:
+                asid = 100013;
+                break;
+        }
+
+        try {
+            Class.forName("java.sql.DriverManager");
+            Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setInt(1, asid);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String cage = rs.getString(1);
+                ta1.append(cage + "\n");
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (Exception e) {
+            System.out.print(e.getMessage());
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -388,18 +337,19 @@ public class Customer extends javax.swing.JFrame {
         }
         else
         {
+            int cid1 = 0;
+            int tid1 = 0;
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="select cid from customer;";
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                Statement stmt = con.createStatement();
+                String query="select max(cid) from customer;";
                 ResultSet rs=stmt.executeQuery(query);
-                while (rs.next())
+                if (rs.next())
                 {
-                    String cid=rs.getString("cid");
-                    int cid2=Integer.parseInt(cid)+1;
-                    t7.setText(""+cid2);
+                    cid1 = rs.getInt(1) + 1;
+                    t7.setText(""+cid1);
                 }
                 con.close();
                 stmt.close();
@@ -412,15 +362,14 @@ public class Customer extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection fon = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement gtmt = (Statement) fon.createStatement();
-                String query1="select tid from tickets;";
+                Connection fon = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                Statement gtmt = fon.createStatement();
+                String query1="select max(tid) from tickets;";
                 ResultSet as=gtmt.executeQuery(query1);
-                while (as.next())
+                if (as.next())
                 {
-                    String tid=as.getString(1);
-                    int tid2=Integer.parseInt(tid)+1;
-                    t8.setText(""+tid2);
+                    tid1 = as.getInt(1) + 1;
+                    t8.setText(""+tid1);
                 }
                 fon.close();
                 gtmt.close();
@@ -430,15 +379,18 @@ public class Customer extends javax.swing.JFrame {
             {
                 JOptionPane.showMessageDialog(this, a.getMessage());
             }
-            int cid1=Integer.parseInt(t7.getText());
-            int tid1=Integer.parseInt(t8.getText());
+
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection gon = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement htmt = (Statement) gon.createStatement();
-                String query2="insert into customer values("+cid1+",'"+name+"',"+phone+",'"+address+"');";
-                htmt.executeUpdate(query2);
+                Connection gon = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                String query2="insert into customer values(?,?,?,?);";
+                PreparedStatement htmt = gon.prepareStatement(query2);
+                htmt.setInt(1, cid1);
+                htmt.setString(2, name);
+                htmt.setString(3, phone);
+                htmt.setString(4, address);
+                htmt.executeUpdate();
                 gon.close();
                 htmt.close();
                 
@@ -450,10 +402,14 @@ public class Customer extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection hon = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement itmt = (Statement) hon.createStatement();
-                String query4="insert into tickets values("+tid1+","+cid1+","+mem+","+cost+");";
-                itmt.executeUpdate(query4);
+                Connection hon = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                String query4="insert into tickets values(?,?,?,?);";
+                PreparedStatement itmt = hon.prepareStatement(query4);
+                itmt.setInt(1, tid1);
+                itmt.setInt(2, cid1);
+                itmt.setInt(3, mem);
+                itmt.setInt(4, cost);
+                itmt.executeUpdate();
                 hon.close();
                 itmt.close();
                 
@@ -463,11 +419,6 @@ public class Customer extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, c.getMessage());
             }
             JOptionPane.showMessageDialog(this, "Welcome to the Zoo!");
-                    
-                
-            
-            
-            
         }
                             
                             

@@ -29,7 +29,6 @@ public class Home_Page extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(500, 341));
@@ -63,10 +62,6 @@ public class Home_Page extends javax.swing.JFrame {
         });
         getContentPane().add(jButton3);
         jButton3.setBounds(170, 200, 121, 23);
-
-        jLabel1.setIcon(new javax.swing.ImageIcon("C:\\Users\\Harsh baweja\\Desktop\\pexels-photo-247431.jpeg")); // NOI18N
-        getContentPane().add(jLabel1);
-        jLabel1.setBounds(0, 0, 500, 341);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -125,6 +120,5 @@ public class Home_Page extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }

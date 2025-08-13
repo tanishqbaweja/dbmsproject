@@ -8,8 +8,9 @@
  *
  * @author Harsh baweja
  */
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.Statement;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
@@ -294,10 +295,10 @@ public class Employee_Logged_In extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
                 String query="select * from animals;";
-                ResultSet rs=stmt.executeQuery(query);
+                PreparedStatement stmt = con.prepareStatement(query);
+                ResultSet rs=stmt.executeQuery();
                 while(rs.next())
                 {
                     String aid=rs.getString("aid");
@@ -355,10 +356,17 @@ public class Employee_Logged_In extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="update animals set aid="+a+",asid="+b+",eid="+c+",gender='"+g+"',cage_number="+d+",last_feed_time='"+e+"',weight_height='"+f+"' where AID="+a+";";
-                stmt.executeUpdate(query);
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                String query="update animals set asid=?,eid=?,gender=?,cage_number=?,last_feed_time=?,weight_height=? where AID=?;";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, b);
+                stmt.setString(2, c);
+                stmt.setString(3, g);
+                stmt.setString(4, d);
+                stmt.setString(5, e);
+                stmt.setString(6, f);
+                stmt.setString(7, a);
+                stmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Updated!");
             }
             catch (Exception ex)
@@ -379,10 +387,11 @@ public class Employee_Logged_In extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="delete from animals where aid="+a+";";
-                stmt.executeUpdate(query);
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                String query="delete from animals where aid=?;";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, a);
+                stmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Deleted!");
             }
             catch (Exception gx)
@@ -429,10 +438,17 @@ public class Employee_Logged_In extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="insert into animals values("+a+","+b+","+c+",'"+g+"',"+d+",'"+e+"','"+f+"');";
-                stmt.executeUpdate(query);
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                String query="insert into animals values(?,?,?,?,?,?,?);";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, a);
+                stmt.setString(2, b);
+                stmt.setString(3, c);
+                stmt.setString(4, g);
+                stmt.setString(5, d);
+                stmt.setString(6, e);
+                stmt.setString(7, f);
+                stmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Added!");
             }
             catch (Exception ex)

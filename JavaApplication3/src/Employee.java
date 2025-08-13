@@ -1,8 +1,9 @@
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.Statement;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 
 /*
@@ -116,41 +117,30 @@ public class Employee extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="select * from employee;";
-                ResultSet rs=stmt.executeQuery(query);
-                int tmp=0;
-                while (rs.next())
-                {
-                    String id2=rs.getString("eid");
-                    id1=rs.getString("e_name");
-                    pass=rs.getString("password");
-                    if(id1.equals(id) && pass.equals(password))
-                    {
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                String query="select eid, password from employee where e_name = ?;";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, id);
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    String dbPassword = rs.getString("password");
+                    String hashedPassword = PasswordUtil.hashPassword(password);
+                    if (dbPassword.equals(hashedPassword)) {
+                        String eid = rs.getString("eid");
                         JOptionPane.showMessageDialog(this, "Logged IN!");
-                        tmp++;
-                        new Employee_Logged_In(id2).setVisible(true);
+                        new Employee_Logged_In(eid).setVisible(true);
                         this.setVisible(false);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Please check the username or password.");
                     }
-                    else
-                    {
-                        
-                    }
-                
-                }
-                if(tmp==0)
-                {
+                } else {
                     JOptionPane.showMessageDialog(this, "Please check the username or password.");
                 }
-                else
-                {
-                    
-                }
+
                 rs.close();
                 stmt.close();
                 con.close();
-
             }
             catch (Exception e)
             {

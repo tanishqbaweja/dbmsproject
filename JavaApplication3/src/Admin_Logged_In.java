@@ -1,6 +1,7 @@
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.Statement;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
@@ -299,10 +300,16 @@ public class Admin_Logged_In extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="insert into employee values("+a+","+b+",'"+c+"',"+d+","+e+",'"+f+"');";
-                stmt.executeUpdate(query);
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                String query="insert into employee values(?,?,?,?,?,?);";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, a);
+                stmt.setString(2, b);
+                stmt.setString(3, c);
+                stmt.setString(4, d);
+                stmt.setString(5, e);
+                stmt.setString(6, f);
+                stmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Added!");
             }
             catch (Exception ex)
@@ -320,10 +327,10 @@ public class Admin_Logged_In extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
                 String query="select * from employee;";
-                ResultSet rs=stmt.executeQuery(query);
+                PreparedStatement stmt = con.prepareStatement(query);
+                ResultSet rs=stmt.executeQuery();
                 while(rs.next())
                 {
                     String eid=rs.getString("eid");
@@ -389,10 +396,16 @@ public class Admin_Logged_In extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="update employee set eid="+a+",zid="+b+",e_name='"+c+"',phone_no="+d+",salary="+e+",password='"+f+"' where eid="+a+";";
-                stmt.executeUpdate(query);
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                String query="update employee set zid=?,e_name=?,phone_no=?,salary=?,password=? where eid=?;";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, b);
+                stmt.setString(2, c);
+                stmt.setString(3, d);
+                stmt.setString(4, e);
+                stmt.setString(5, f);
+                stmt.setString(6, a);
+                stmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Updated!");
             }
             catch (Exception ex)
@@ -414,10 +427,11 @@ public class Admin_Logged_In extends javax.swing.JFrame {
             try
             {
                 Class.forName("java.sql.DriverManager");
-                Connection con = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/project?useSSL=false","root","verygood(12)");
-                Statement stmt = (Statement) con.createStatement();
-                String query="delete from employee where eid="+a+";";
-                stmt.executeUpdate(query);
+                Connection con = DriverManager.getConnection(DBConfig.getDbUrl(), DBConfig.getDbUser(), DBConfig.getDbPassword());
+                String query="delete from employee where eid=?;";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, a);
+                stmt.executeUpdate();
                 JOptionPane.showMessageDialog(this, "Deleted!");
             }
             catch (Exception gx)
